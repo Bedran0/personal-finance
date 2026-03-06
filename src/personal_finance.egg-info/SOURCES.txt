@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/finance/__init__.py
+src/finance/cli.py
+src/finance/tracker.py
+src/personal_finance.egg-info/PKG-INFO
+src/personal_finance.egg-info/SOURCES.txt
+src/personal_finance.egg-info/dependency_links.txt
+src/personal_finance.egg-info/entry_points.txt
+src/personal_finance.egg-info/requires.txt
+src/personal_finance.egg-info/top_level.txt
+tests/test_tracker.py
