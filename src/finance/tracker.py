@@ -68,3 +68,30 @@ class FinanceTracker:
 
     def all(self) -> list[dict]:
         return sorted(self._records, key=lambda x: x["date"], reverse=True)
+
+    def delete(self, index: int) -> dict:
+        if index < 0 or index >= len(self._records):
+            raise IndexError(f"No record at index {index}")
+        record = self._records.pop(index)
+        self._save()
+        return record
+
+    def filter_by_date(
+        self,
+        start: Optional[date] = None,
+        end: Optional[date] = None,
+    ) -> list[dict]:
+        result = self._records
+        if start:
+            result = [r for r in result if r["date"] >= start.isoformat()]
+        if end:
+            result = [r for r in result if r["date"] <= end.isoformat()]
+        return sorted(result, key=lambda x: x["date"], reverse=True)
+
+    def export_csv(self, path: str):
+        import csv
+        with open(path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=["date", "type", "category", "amount", "description"])
+            writer.writeheader()
+            writer.writerows(sorted(self._records, key=lambda x: x["date"]))
+	

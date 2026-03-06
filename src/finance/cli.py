@@ -72,3 +72,86 @@ def monthly():
         )
 
     console.print(table)
+
+
+@app.command()
+def list():
+    """List all records with index numbers."""
+    records = tracker.all()
+    if not records:
+        console.print("[yellow]No records found.[/yellow]")
+        return
+    table = Table(title="All Records", box=box.ROUNDED)
+    table.add_column("Index", justify="right", style="dim")
+    table.add_column("Date")
+    table.add_column("Type")
+    table.add_column("Category")
+    table.add_column("Amount", justify="right")
+    table.add_column("Description")
+
+    for i, r in enumerate(records):
+        color = "green" if r["type"] == "income" else "red"
+        table.add_row(
+            str(i),
+            r["date"],
+            f"[{color}]{r['type']}[/{color}]",
+            r["category"],
+            f"[{color}]{r['amount']:.2f}[/{color}]",
+            r["description"] or "-",
+        )
+    console.print(table)
+
+
+@app.command()
+def delete(
+    index: int = typer.Option(..., prompt="Index to delete"),
+):
+    """Delete a record by its index (use 'list' to see indexes)."""
+    try:
+        record = tracker.delete(index)
+        console.print(f"[red]✓ Deleted:[/red] {record}")
+    except IndexError as e:
+        console.print(f"[red]Error:[/red] {e}")
+
+
+@app.command()
+def filter(
+    start: str = typer.Option(None, help="Start date (YYYY-MM-DD)"),
+    end: str = typer.Option(None, help="End date (YYYY-MM-DD)"),
+):
+    """Filter records by date range."""
+    from datetime import date as d
+    start_date = d.fromisoformat(start) if start else None
+    end_date   = d.fromisoformat(end)   if end   else None
+    records = tracker.filter_by_date(start_date, end_date)
+
+    if not records:
+        console.print("[yellow]No records found.[/yellow]")
+        return
+
+    table = Table(title="Filtered Records", box=box.ROUNDED)
+    table.add_column("Date")
+    table.add_column("Type")
+    table.add_column("Category")
+    table.add_column("Amount", justify="right")
+    table.add_column("Description")
+
+    for r in records:
+        color = "green" if r["type"] == "income" else "red"
+        table.add_row(
+            r["date"],
+            f"[{color}]{r['type']}[/{color}]",
+            r["category"],
+            f"[{color}]{r['amount']:.2f}[/{color}]",
+            r["description"] or "-",
+        )
+    console.print(table)
+
+
+@app.command()
+def export(
+    path: str = typer.Option("finance_export.csv", help="Output file path"),
+):
+    """Export all records to a CSV file."""
+    tracker.export_csv(path)
+    console.print(f"[green]✓ Exported to {path}[/green]")
