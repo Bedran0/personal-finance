@@ -1,4 +1,4 @@
-# 💰 Personal Finance Tracker
+# Personal Finance Tracker
 
 A CLI tool to track your income and expenses from the terminal.
 
